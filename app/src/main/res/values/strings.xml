@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">EarnMore India</string>
+    <string name="tagline_main">Genuine Work. Transparent Commissions. Real Skills.</string>
+    <string name="badge_test_mode">TEST MODE • Simulated Payout Environment</string>
+    <string name="btn_sign_in_google">Sign in with Google</string>
+    <string name="btn_sign_out">Sign Out</string>
+    <string name="label_available_balance">Available Balance</string>
+    <string name="label_pending_earnings">Pending Earnings</string>
+    <string name="label_total_verified">Total Verified Earnings</string>
+    <string name="label_completed_tasks">Completed Tasks</string>
+    <string name="label_active_projects">Active Projects</string>
+    <string name="label_recent_transactions">Recent Ledger Transactions</string>
+    <string name="label_consent_title">Legal &amp; Compliance Consent</string>
+    <string name="label_consent_body">I agree to the Terms &amp; Conditions, Privacy Policy (DPDP Act 2023), Refund Policy, and single-tier anti-MLM referral rules. No earnings are guaranteed.</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_earn">Earn</string>
+    <string name="nav_wallet">Wallet</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_admin">Admin</string>
+    <string name="empty_ledger_title">No transactions yet</string>
+    <string name="empty_ledger_subtitle">Complete a verified task, gig, or order to see transparent ledger entries here.</string>
+</resources>

@@ -1,0 +1,441 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Registered EarnMore India user profile with verification, referral code, language, and consent metadata.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["USER", "ADMIN"] },
+        "referralCode": { "type": "string" },
+        "referredByUid": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "kycStatus": { "type": "string", "enum": ["UNVERIFIED", "PENDING", "VERIFIED"] },
+        "preferredLanguage": { "type": "string", "enum": ["en", "hi"] },
+        "consentAccepted": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Must be FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Must be FieldValue.serverTimestamp()" }
+      },
+      "required": ["userId", "displayName", "email", "role", "referralCode", "isVerified", "kycStatus", "preferredLanguage", "consentAccepted", "createdAt", "updatedAt"]
+    },
+    "Wallet": {
+      "title": "Wallet",
+      "description": "User earning wallet summary. Balance mutations are restricted from regular client writes.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "availableBalanceInr": { "type": "number" },
+        "pendingBalanceInr": { "type": "number" },
+        "totalEarnedInr": { "type": "number" },
+        "totalWithdrawnInr": { "type": "number" },
+        "completedTasksCount": { "type": "integer" },
+        "activeProjectsCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "availableBalanceInr", "pendingBalanceInr", "totalEarnedInr", "totalWithdrawnInr", "completedTasksCount", "activeProjectsCount", "createdAt", "updatedAt"]
+    },
+    "LedgerTransaction": {
+      "title": "LedgerTransaction",
+      "description": "Immutable financial transaction ledger entry with transparent gross, commission, gateway fee, and net breakdown.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["CREDIT_TASK", "CREDIT_FREELANCE", "CREDIT_PRODUCT", "CREDIT_AFFILIATE", "CREDIT_REFERRAL", "CREDIT_TEACHING", "CREDIT_SERVICE", "DEBIT_WITHDRAWAL", "REFUND"] },
+        "category": { "type": "string" },
+        "grossAmountInr": { "type": "number" },
+        "platformCommissionInr": { "type": "number" },
+        "gatewayFeeInr": { "type": "number" },
+        "netAmountInr": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING", "VERIFIED", "REVERSED"] },
+        "referenceId": { "type": "string" },
+        "idempotencyKey": { "type": "string" },
+        "description": { "type": "string" },
+        "isTestMode": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "type", "category", "grossAmountInr", "platformCommissionInr", "gatewayFeeInr", "netAmountInr", "status", "referenceId", "idempotencyKey", "description", "isTestMode", "createdAt"]
+    },
+    "WithdrawalRequest": {
+      "title": "WithdrawalRequest",
+      "description": "Payout withdrawal request in TEST MODE or compliant Indian UPI/Bank architecture (no PINs or passwords stored).",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "amountInr": { "type": "number" },
+        "payoutMethod": { "type": "string", "enum": ["UPI_TEST", "BANK_TEST"] },
+        "maskedDestination": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "PAID_TEST", "REJECTED", "CANCELLED"] },
+        "isTestMode": { "type": "boolean" },
+        "reviewNote": { "type": "string" },
+        "reviewedByAdminId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "amountInr", "payoutMethod", "maskedDestination", "status", "isTestMode", "createdAt", "updatedAt"]
+    },
+    "CommissionConfig": {
+      "title": "CommissionConfig",
+      "description": "Admin-configurable platform commission, gateway charge, and operating cost percentages per marketplace category.",
+      "type": "object",
+      "properties": {
+        "category": { "type": "string", "enum": ["TASKS", "FREELANCE", "PRODUCTS", "AFFILIATE", "TEACHING", "SERVICES"] },
+        "commissionPercent": { "type": "number" },
+        "gatewayFeePercent": { "type": "number" },
+        "operatingCostPercent": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "updatedByUid": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["category", "commissionPercent", "gatewayFeePercent", "operatingCostPercent", "isActive", "updatedByUid", "updatedAt"]
+    },
+    "MicroTask": {
+      "title": "MicroTask",
+      "description": "Genuine microtask listing (data entry, content writing, image tagging, web testing, research).",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "titleHi": { "type": "string" },
+        "category": { "type": "string", "enum": ["DATA_ENTRY", "CONTENT_WRITING", "IMAGE_CATEGORIZATION", "WEBSITE_TESTING", "RESEARCH", "GAME_TASK"] },
+        "description": { "type": "string" },
+        "rewardGrossInr": { "type": "number" },
+        "commissionPercent": { "type": "number" },
+        "workerNetInr": { "type": "number" },
+        "slotsTotal": { "type": "integer" },
+        "slotsFilled": { "type": "integer" },
+        "status": { "type": "string", "enum": ["OPEN", "PAUSED", "CLOSED"] },
+        "createdByUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "description", "rewardGrossInr", "commissionPercent", "workerNetInr", "slotsTotal", "slotsFilled", "status", "createdByUid", "createdAt", "updatedAt"]
+    },
+    "TaskSubmission": {
+      "title": "TaskSubmission",
+      "description": "Worker submission for a microtask with proof text/URL and admin approval state.",
+      "type": "object",
+      "properties": {
+        "taskId": { "type": "string" },
+        "userId": { "type": "string" },
+        "proofText": { "type": "string" },
+        "proofUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["SUBMITTED", "APPROVED", "REJECTED"] },
+        "reviewNote": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["taskId", "userId", "proofText", "status", "createdAt", "updatedAt"]
+    },
+    "FreelanceGig": {
+      "title": "FreelanceGig",
+      "description": "Freelance service offering (design, video editing, typing, translation, web dev, writing).",
+      "type": "object",
+      "properties": {
+        "sellerId": { "type": "string" },
+        "sellerName": { "type": "string" },
+        "category": { "type": "string", "enum": ["GRAPHIC_DESIGN", "VIDEO_EDITING", "LOGO_DESIGN", "TYPING", "TRANSLATION", "WEB_DEVELOPMENT", "WRITING"] },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "priceInr": { "type": "number" },
+        "deliveryDays": { "type": "integer" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sellerId", "sellerName", "category", "title", "description", "priceInr", "deliveryDays", "isActive", "createdAt", "updatedAt"]
+    },
+    "FreelanceOrder": {
+      "title": "FreelanceOrder",
+      "description": "Freelance order with transparent platform commission and TEST MODE payment state.",
+      "type": "object",
+      "properties": {
+        "gigId": { "type": "string" },
+        "buyerId": { "type": "string" },
+        "sellerId": { "type": "string" },
+        "grossAmountInr": { "type": "number" },
+        "platformCommissionInr": { "type": "number" },
+        "sellerNetInr": { "type": "number" },
+        "requirements": { "type": "string" },
+        "deliveryNote": { "type": "string" },
+        "status": { "type": "string", "enum": ["PLACED", "IN_PROGRESS", "DELIVERED", "COMPLETED", "DISPUTED", "CANCELLED"] },
+        "isTestMode": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["gigId", "buyerId", "sellerId", "grossAmountInr", "platformCommissionInr", "sellerNetInr", "requirements", "status", "isTestMode", "createdAt", "updatedAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Marketplace product listing.",
+      "type": "object",
+      "properties": {
+        "sellerId": { "type": "string" },
+        "sellerName": { "type": "string" },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "priceInr": { "type": "number" },
+        "stock": { "type": "integer" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sellerId", "sellerName", "category", "title", "description", "priceInr", "stock", "isActive", "createdAt", "updatedAt"]
+    },
+    "ProductOrder": {
+      "title": "ProductOrder",
+      "description": "Product marketplace order with seller commission and tracking state.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "buyerId": { "type": "string" },
+        "sellerId": { "type": "string" },
+        "quantity": { "type": "integer" },
+        "grossAmountInr": { "type": "number" },
+        "platformCommissionInr": { "type": "number" },
+        "sellerNetInr": { "type": "number" },
+        "shippingArea": { "type": "string" },
+        "trackingStatus": { "type": "string", "enum": ["ORDERED", "PACKED", "SHIPPED", "DELIVERED", "COMPLETED", "CANCELLED"] },
+        "isTestMode": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "buyerId", "sellerId", "quantity", "grossAmountInr", "platformCommissionInr", "sellerNetInr", "shippingArea", "trackingStatus", "isTestMode", "createdAt", "updatedAt"]
+    },
+    "AffiliateOffer": {
+      "title": "AffiliateOffer",
+      "description": "Genuine merchant affiliate campaign.",
+      "type": "object",
+      "properties": {
+        "merchantName": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "baseUrl": { "type": "string" },
+        "totalCommissionPercent": { "type": "number" },
+        "userSharePercent": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["merchantName", "title", "category", "baseUrl", "totalCommissionPercent", "userSharePercent", "isActive", "createdAt"]
+    },
+    "AffiliateEvent": {
+      "title": "AffiliateEvent",
+      "description": "Unique affiliate link tracking and verified sale conversion record.",
+      "type": "object",
+      "properties": {
+        "offerId": { "type": "string" },
+        "promoterUid": { "type": "string" },
+        "trackingCode": { "type": "string" },
+        "status": { "type": "string", "enum": ["CLICKED", "VERIFIED_SALE", "REJECTED"] },
+        "saleAmountInr": { "type": "number" },
+        "grossCommissionInr": { "type": "number" },
+        "userPayoutInr": { "type": "number" },
+        "platformNetInr": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["offerId", "promoterUid", "trackingCode", "status", "saleAmountInr", "grossCommissionInr", "userPayoutInr", "platformNetInr", "createdAt", "updatedAt"]
+    },
+    "ReferralRecord": {
+      "title": "ReferralRecord",
+      "description": "Single-tier anti-MLM referral tracking unlocked only on verified eligible activity.",
+      "type": "object",
+      "properties": {
+        "referrerUid": { "type": "string" },
+        "refereeUid": { "type": "string" },
+        "referralCode": { "type": "string" },
+        "status": { "type": "string", "enum": ["SIGNED_UP", "ELIGIBLE_ACTIVITY_DONE", "REWARDED", "FLAGGED"] },
+        "rewardInr": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["referrerUid", "refereeUid", "referralCode", "status", "rewardInr", "createdAt", "updatedAt"]
+    },
+    "TutorCourse": {
+      "title": "TutorCourse",
+      "description": "Online tutoring or skill-based course listing.",
+      "type": "object",
+      "properties": {
+        "tutorId": { "type": "string" },
+        "tutorName": { "type": "string" },
+        "subject": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "hourlyRateInr": { "type": "number" },
+        "mode": { "type": "string", "enum": ["LIVE_1ON1", "COHORT_CLASS", "SKILL_COURSE"] },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["tutorId", "tutorName", "subject", "title", "description", "hourlyRateInr", "mode", "isActive", "createdAt", "updatedAt"]
+    },
+    "TutorBooking": {
+      "title": "TutorBooking",
+      "description": "Booking record for a tutoring session or skill course.",
+      "type": "object",
+      "properties": {
+        "courseId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "tutorId": { "type": "string" },
+        "scheduledSlot": { "type": "string" },
+        "grossAmountInr": { "type": "number" },
+        "platformCommissionInr": { "type": "number" },
+        "tutorNetInr": { "type": "number" },
+        "status": { "type": "string", "enum": ["BOOKED", "CONFIRMED", "COMPLETED", "CANCELLED"] },
+        "isTestMode": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["courseId", "studentId", "tutorId", "scheduledSlot", "grossAmountInr", "platformCommissionInr", "tutorNetInr", "status", "isTestMode", "createdAt", "updatedAt"]
+    },
+    "LocalService": {
+      "title": "LocalService",
+      "description": "Local Indian hyperlocal service provider listing.",
+      "type": "object",
+      "properties": {
+        "providerId": { "type": "string" },
+        "providerName": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "city": { "type": "string" },
+        "description": { "type": "string" },
+        "rateInr": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["providerId", "providerName", "serviceType", "city", "description", "rateInr", "isActive", "createdAt", "updatedAt"]
+    },
+    "ServiceBooking": {
+      "title": "ServiceBooking",
+      "description": "Local service booking with mutual customer completion confirmation.",
+      "type": "object",
+      "properties": {
+        "serviceId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "providerId": { "type": "string" },
+        "cityArea": { "type": "string" },
+        "notes": { "type": "string" },
+        "grossAmountInr": { "type": "number" },
+        "platformCommissionInr": { "type": "number" },
+        "providerNetInr": { "type": "number" },
+        "customerConfirmed": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["REQUESTED", "ACCEPTED", "WORK_DONE", "COMPLETED", "CANCELLED"] },
+        "isTestMode": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["serviceId", "customerId", "providerId", "cityArea", "grossAmountInr", "platformCommissionInr", "providerNetInr", "customerConfirmed", "status", "isTestMode", "createdAt", "updatedAt"]
+    },
+    "DisputeRefund": {
+      "title": "DisputeRefund",
+      "description": "Order dispute and refund ticket.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "relatedOrderId": { "type": "string" },
+        "category": { "type": "string" },
+        "reason": { "type": "string" },
+        "requestedRefundInr": { "type": "number" },
+        "status": { "type": "string", "enum": ["OPEN", "UNDER_REVIEW", "REFUNDED", "REJECTED"] },
+        "adminResolutionNote": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "relatedOrderId", "category", "reason", "requestedRefundInr", "status", "createdAt", "updatedAt"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Customer support inquiry ticket.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["OPEN", "IN_PROGRESS", "RESOLVED"] },
+        "adminReply": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "subject", "message", "category", "status", "createdAt", "updatedAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Admin-only immutable audit trail of sensitive platform and financial actions.",
+      "type": "object",
+      "properties": {
+        "actorUid": { "type": "string" },
+        "action": { "type": "string" },
+        "targetPath": { "type": "string" },
+        "summary": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["actorUid", "action", "targetPath", "summary", "createdAt"]
+    },
+    "FraudFlag": {
+      "title": "FraudFlag",
+      "description": "Anti-fraud anomaly record for admin investigation.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "reason": { "type": "string" },
+        "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+        "status": { "type": "string", "enum": ["OPEN", "CLEARED", "BLOCKED"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "reason", "severity", "status", "createdAt", "updatedAt"]
+    },
+    "AdminMarker": {
+      "title": "AdminMarker",
+      "description": "Authoritative RBAC marker doc granting admin access.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "ReferralCodeLookup": {
+      "title": "ReferralCodeLookup",
+      "description": "PII-free referral code index mapping public referral codes to owner UIDs.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "ownerUid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "ownerUid", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminUid}": { "schema": { "$ref": "#/entities/AdminMarker" }, "description": "RBAC admin markers" },
+    "/referral_codes/{code}": { "schema": { "$ref": "#/entities/ReferralCodeLookup" }, "description": "PII-free referral code directory" },
+    "/users/{userId}": { "schema": { "$ref": "#/entities/UserProfile" }, "description": "User profiles" },
+    "/wallets/{userId}": { "schema": { "$ref": "#/entities/Wallet" }, "description": "User wallets" },
+    "/ledger_transactions/{txId}": { "schema": { "$ref": "#/entities/LedgerTransaction" }, "description": "Immutable financial ledger" },
+    "/withdrawal_requests/{reqId}": { "schema": { "$ref": "#/entities/WithdrawalRequest" }, "description": "User withdrawal requests" },
+    "/commission_configs/{categoryId}": { "schema": { "$ref": "#/entities/CommissionConfig" }, "description": "Category commission settings" },
+    "/tasks/{taskId}": { "schema": { "$ref": "#/entities/MicroTask" }, "description": "Daily microtasks" },
+    "/task_submissions/{submissionId}": { "schema": { "$ref": "#/entities/TaskSubmission" }, "description": "Microtask submissions" },
+    "/freelance_gigs/{gigId}": { "schema": { "$ref": "#/entities/FreelanceGig" }, "description": "Freelance gig listings" },
+    "/freelance_orders/{orderId}": { "schema": { "$ref": "#/entities/FreelanceOrder" }, "description": "Freelance orders" },
+    "/products/{productId}": { "schema": { "$ref": "#/entities/Product" }, "description": "Product marketplace listings" },
+    "/product_orders/{orderId}": { "schema": { "$ref": "#/entities/ProductOrder" }, "description": "Product marketplace orders" },
+    "/affiliate_offers/{offerId}": { "schema": { "$ref": "#/entities/AffiliateOffer" }, "description": "Affiliate offers" },
+    "/affiliate_events/{eventId}": { "schema": { "$ref": "#/entities/AffiliateEvent" }, "description": "Affiliate link tracking and conversions" },
+    "/referrals/{referralId}": { "schema": { "$ref": "#/entities/ReferralRecord" }, "description": "Single-tier referral records" },
+    "/tutor_courses/{courseId}": { "schema": { "$ref": "#/entities/TutorCourse" }, "description": "Tutoring & skill courses" },
+    "/tutor_bookings/{bookingId}": { "schema": { "$ref": "#/entities/TutorBooking" }, "description": "Tutoring bookings" },
+    "/local_services/{serviceId}": { "schema": { "$ref": "#/entities/LocalService" }, "description": "Local service listings" },
+    "/service_bookings/{bookingId}": { "schema": { "$ref": "#/entities/ServiceBooking" }, "description": "Local service bookings" },
+    "/disputes_refunds/{disputeId}": { "schema": { "$ref": "#/entities/DisputeRefund" }, "description": "Disputes and refund requests" },
+    "/support_tickets/{ticketId}": { "schema": { "$ref": "#/entities/SupportTicket" }, "description": "Support tickets" },
+    "/audit_logs/{logId}": { "schema": { "$ref": "#/entities/AuditLog" }, "description": "Admin audit logs" },
+    "/fraud_flags/{flagId}": { "schema": { "$ref": "#/entities/FraudFlag" }, "description": "Anti-fraud flags" }
+  }
+}

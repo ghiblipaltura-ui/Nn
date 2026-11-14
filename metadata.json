@@ -1,0 +1,6 @@
+{
+  "name": "EarnMore India",
+  "description": "All-in-one Indian earning marketplace for verified microtasks, freelancing, products, affiliate sales, tutoring, and local services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

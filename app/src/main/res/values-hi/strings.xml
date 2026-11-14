@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">EarnMore India</string>
+    <string name="tagline_main">असली काम। पारदर्शी कमीशन। वास्तविक कौशल।</string>
+    <string name="badge_test_mode">TEST MODE • सिम्युलेटेड भुगतान वातावरण</string>
+    <string name="btn_sign_in_google">Google से साइन इन करें</string>
+    <string name="btn_sign_out">साइन आउट</string>
+    <string name="label_available_balance">उपलब्ध शेष</string>
+    <string name="label_pending_earnings">लंबित कमाई</string>
+    <string name="label_total_verified">कुल सत्यापित कमाई</string>
+    <string name="label_completed_tasks">पूर्ण कार्य</string>
+    <string name="label_active_projects">सक्रिय प्रोजेक्ट</string>
+    <string name="label_recent_transactions">हाल के लेन-देन</string>
+    <string name="label_consent_title">कानूनी एवं अनुपालन सहमति</string>
+    <string name="label_consent_body">मैं नियम एवं शर्तें, गोपनीयता नीति (DPDP अधिनियम 2023), रिफंड नीति और सिंगल-टियर एंटी-MLM रेफरल नियमों से सहमत हूँ।</string>
+    <string name="nav_home">होम</string>
+    <string name="nav_earn">कमाई</string>
+    <string name="nav_wallet">वॉलेट</string>
+    <string name="nav_profile">प्रोफ़ाइल</string>
+    <string name="nav_admin">एडमिन</string>
+    <string name="empty_ledger_title">अभी कोई लेन-देन नहीं</string>
+    <string name="empty_ledger_subtitle">पारदर्शी लेज़र प्रविष्टियां देखने के लिए कोई कार्य या प्रोजेक्ट पूरा करें।</string>
+</resources>
